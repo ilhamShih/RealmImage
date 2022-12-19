@@ -14,7 +14,7 @@
         <activity
             android:name=".ui.main.Splash"
             android:exported="true"
-            android:theme="@style/Theme.RealmImade.NoActionBar">
+            android:theme="@style/Theme.RealmImade.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -23,8 +23,17 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.RealmImade.NoActionBar">
+            android:exported="true">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
+
+
+        <activity
+            android:name=".NotificationActivity"
+            android:exported="true">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

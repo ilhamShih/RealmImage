@@ -1,78 +1,53 @@
 package com.realm.imade
 
-import android.os.Build
+
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.KeyEvent
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import com.realm.imade.api.DataService
-import com.realm.imade.api.RetrofitResponse.retrofitInstanceServer
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import com.realm.imade.databinding.ActivityMainBinding
-import com.realm.imade.ui.model.PageViewModel
-import com.realm.imade.ui.tabs.TabsAdapter
 
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var pager: ViewPager2
     private lateinit var binding: ActivityMainBinding
-    var dataService: DataService? = null
-    private lateinit var pageViewModel: PageViewModel
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
 
-        pageViewModel = ViewModelProvider(this)[PageViewModel::class.java]
-        dataService = retrofitInstanceServer!!.create(DataService::class.java)
-
-        val tabsAdapter = TabsAdapter(supportFragmentManager, lifecycle)
-        pager = binding.viewPager
-        pager.adapter = tabsAdapter
-        pager.offscreenPageLimit = 1
-        pager.adapter = tabsAdapter
-
-        val tabs: TabLayout = binding.tabs
-        TabLayoutMediator(tabs, pager) { tab, position ->
-            when (position) {
-                0 -> {
-                    tab.icon =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.ic_baseline_list,
-                                null
-                            )
-                        else
-                            AppCompatResources.getDrawable(this, R.drawable.ic_baseline_list)
-                }
-                1 -> {
-                    tab.icon =
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                            ResourcesCompat.getDrawable(
-                                resources,
-                                R.drawable.ic_baseline_favorite,
-                                null
-                            )
-                        else
-                            AppCompatResources.getDrawable(this, R.drawable.ic_baseline_favorite)
-                }
-            }
-        }.attach()
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(R.drawable.backgroud))
+        navController = findNavController(R.id.host_view)
 
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish()
-        }
-        return super.onKeyDown(keyCode, event)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.app_bar, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_favorits -> {
+                navController.navigate(R.id.nav_favorits)
+                return true
+            }
+            R.id.menu_notification -> {
+                navController.navigate(R.id.nav_notification)
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

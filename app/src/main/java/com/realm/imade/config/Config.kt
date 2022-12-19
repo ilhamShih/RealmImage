@@ -2,6 +2,7 @@ package com.realm.imade.config
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.realm.imade.api.ServModel
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -17,6 +18,12 @@ object Config {
 
     const val BASE_LIST = true
     const val FAVORITE_LIST = false
+    const val ON_CHANNEL = 4
+
+    var REALM_ADD = false
+    var REALM_GET_ALL = false
+    var REALM_GET_ALL_FAVORITS = false
+    var REALM_GET_ALL_FAVORITS_NOT = false
 
 
     var Context.mainSplash
@@ -38,4 +45,7 @@ object Config {
         }
     }
 
+    fun getSizeRetrofit(element: ServModel): Int {
+        return element.mPhotos.mPhoto.size
+    }
 }

@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RealmImage</string>
+    <string name="fragment_base">FragmentBase</string>
+    <string name="fragment_favorite">FragmentFavorite</string>
+    <string name="title_app_bar">title_app_bar</string>
+    <string name="fragment_notification">FragmentNotification</string>
 </resources>

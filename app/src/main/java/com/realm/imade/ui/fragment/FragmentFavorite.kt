@@ -4,31 +4,37 @@ package com.realm.imade.ui.fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.realm.imade.adapter.ListAdapter
 import com.realm.imade.databinding.FragmentFavoriteBinding
-import com.realm.imade.db.ItemFavoritesKey
+import com.realm.imade.db.BaseList
 import com.realm.imade.ui.model.PageViewModel
-import io.realm.kotlin.notifications.ResultsChange
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
-class FragmentFavorite : Fragment() {
+class FragmentFavorite : Fragment(), ListAdapter.ListAdapterInterface {
 
+    lateinit var recyclerView: RecyclerView
+    lateinit var adapter: ListAdapter
+    lateinit var progress: CircularProgressIndicator
     private lateinit var pageViewModel: PageViewModel
     private var _binding: FragmentFavoriteBinding? = null
     private val binding get() = _binding!!
-    private lateinit var listView: LinearLayout
+    private var mList: ArrayList<BaseList> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pageViewModel = ViewModelProvider(requireActivity())[PageViewModel::class.java]
+        pageViewModel = ViewModelProvider(this)[PageViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -37,47 +43,56 @@ class FragmentFavorite : Fragment() {
     ): View {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
         val root = binding.root
-        listView = binding.listView
+        recyclerView = binding.recyclerView
+        progress = binding.progressCircular
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        pageViewModel.subscribeFavorites()
 
-        CoroutineScope(Dispatchers.Main).launch {
-            pageViewModel.subscribeFavorites()
-        }
-        pageViewModel.changesResults2.observe(requireActivity()) {
-            when (it) {
-                true -> {
-                    pageViewModel.changesResults.value?.let { it1 ->
-                        getFavoritList(it1)
-                    }
-                }
-                false -> {
-                    listView.removeAllViews()
-                    pageViewModel.changesResults.value?.let { it1 ->
-                        getFavoritList(it1)
-                    }
-                }
-            }
-        }
+
         return root
     }
 
-    fun getFavoritList(resultsChange: ResultsChange<ItemFavoritesKey>) {
-        resultsChange.list.forEach { itForList ->
-            val imageView = ImageView(activity)
-            activity?.let { it1 ->
-                Glide.with(it1)
-                    .load(itForList.items?.imageUrlFavorit)
-                    .fitCenter().into(imageView)
-            }
-            listView.addView(imageView)
-            imageView.setOnClickListener {
-                pageViewModel.deliteEntry(itForList.key)
+    override fun onStart() {
+        super.onStart()
+        pageViewModel._favoriteInit.observe(viewLifecycleOwner) {
+            when (it) {
+                true -> {
+                    mList = pageViewModel._favoritesListMutable.value!!
+                    adapter = activity?.let { it1 -> ListAdapter(mList, it1, this) }!!
+                    recyclerView.adapter = adapter
+                    progress.visibility = GONE
+                }
+                false -> {
+                    progress.visibility = GONE
+                }
             }
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pageViewModel._favoriteInit.removeObservers(requireActivity())
+
+    }
+
+    override fun onResult(listItem: BaseList, int: Int) {
+        pageViewModel.deliteEntry(listItem.key)
+        CoroutineScope(Dispatchers.IO).launch {
+            progress.post {
+                progress.visibility = VISIBLE
+            }
+            delay(500)
+            progress.post {
+                progress.visibility = GONE
+            }
+            mList.removeAt(int)
+            adapter.notifyItemRemoved(int)
+        }
     }
 }
