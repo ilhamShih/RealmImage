@@ -1,4 +1,4 @@
-package com.realm.imade
+package com.realm.imade.notification
 
 
 import android.app.NotificationChannel
@@ -11,9 +11,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
-import android.provider.Settings
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.realm.imade.NotificationActivity
+import com.realm.imade.R
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL

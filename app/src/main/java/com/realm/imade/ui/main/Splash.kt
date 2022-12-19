@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.res.ResourcesCompat
 import com.realm.imade.MainActivity
-import com.realm.imade.NotificationM.createChannel
+import com.realm.imade.notification.NotificationM.createChannel
 import com.realm.imade.R
 import com.realm.imade.config.Config
 import com.realm.imade.config.Config.mainSplash

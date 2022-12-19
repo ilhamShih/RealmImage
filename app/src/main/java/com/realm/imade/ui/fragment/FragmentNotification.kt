@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.realm.imade.NotificationM.showNotification
+import com.realm.imade.notification.NotificationM.showNotification
 import com.realm.imade.databinding.FragmentNotificationBinding
 
 
